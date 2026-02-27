@@ -6,7 +6,7 @@ export default function Install() {
     <Layout>
       <div className="container mx-auto px-4 py-12">
         <div className="max-w-lg mx-auto text-center">
-          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-primary to-cyan mx-auto flex items-center justify-center mb-6">
+          <div className="w-16 h-16 rounded-2xl bg-gradient-to-br from-foreground/20 to-foreground/5 mx-auto flex items-center justify-center mb-6">
             <Download className="h-8 w-8 text-primary-foreground" />
           </div>
           <h1 className="text-3xl font-display font-bold gradient-text mb-2">Install FmcComic</h1>
