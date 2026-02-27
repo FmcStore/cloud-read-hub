@@ -22,7 +22,7 @@ export default function Profile() {
       <div className="container mx-auto px-4 py-12 flex justify-center">
         <div className="w-full max-w-md">
           <div className="text-center mb-8">
-            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-primary to-cyan mx-auto flex items-center justify-center mb-4">
+            <div className="w-20 h-20 rounded-full bg-gradient-to-br from-foreground/20 to-foreground/5 mx-auto flex items-center justify-center mb-4">
               <User className="h-10 w-10 text-primary-foreground" />
             </div>
             <h1 className="text-2xl font-display font-bold text-foreground">{username}</h1>

@@ -6,7 +6,7 @@ import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHistory } from "@/hooks/useHistory";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { CommentSection } from "@/components/comic/CommentSection";
 export default function ComicReader() {
   const { slug, chapter } = useParams<{ slug: string; chapter: string }>();
   const navigate = useNavigate();
@@ -115,6 +115,11 @@ export default function ComicReader() {
             onClick={() => setShowUI(!showUI)}
           />
         ))}
+
+        {/* Comment Section */}
+        <div className="px-4 py-6" onClick={(e) => e.stopPropagation()}>
+          <CommentSection comicSlug={comic.slug} chapterNumber={chapterNum} />
+        </div>
       </div>
 
       {/* Bottom nav */}
