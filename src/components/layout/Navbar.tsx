@@ -5,7 +5,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { searchComics } from "@/data/comics";
+import { useDbComics } from "@/hooks/useComics";
 
 export function Navbar() {
   const { user } = useAuth();
@@ -13,11 +13,13 @@ export function Navbar() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
+  const { data: allComics = [] } = useDbComics();
 
   const results = useMemo(() => {
     if (query.trim().length < 2) return [];
-    return searchComics(query.trim()).slice(0, 5);
-  }, [query]);
+    const q = query.trim().toLowerCase();
+    return allComics.filter(c => c.title.toLowerCase().includes(q) || c.genres.some(g => g.toLowerCase().includes(q))).slice(0, 5);
+  }, [query, allComics]);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();

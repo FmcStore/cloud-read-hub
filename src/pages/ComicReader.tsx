@@ -1,16 +1,18 @@
 import { useParams, Link, useNavigate } from "react-router-dom";
-import { getComicBySlug } from "@/data/comics";
 import { useState, useEffect, useCallback } from "react";
-import { ChevronLeft, ChevronRight, Home, Maximize, Minimize, List } from "lucide-react";
+import { ChevronLeft, ChevronRight, Home, Maximize, Minimize, List, Loader2 } from "lucide-react";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHistory } from "@/hooks/useHistory";
 import { motion, AnimatePresence } from "framer-motion";
 import { CommentSection } from "@/components/comic/CommentSection";
+import { useDbComic, useDbChapters } from "@/hooks/useComics";
+
 export default function ComicReader() {
   const { slug, chapter } = useParams<{ slug: string; chapter: string }>();
   const navigate = useNavigate();
-  const comic = getComicBySlug(slug || "");
+  const { data: comic, isLoading: comicLoading } = useDbComic(slug || "");
+  const { data: chapters = [] } = useDbChapters(comic?.id || "");
   const chapterNum = parseInt(chapter || "1");
   const { user } = useAuth();
   const { updateHistory } = useHistory();
@@ -19,18 +21,16 @@ export default function ComicReader() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const currentChapter = comic?.chapters.find((c) => c.number === chapterNum);
+  const currentChapter = chapters.find((c) => c.number === chapterNum);
   const hasPrev = chapterNum > 1;
-  const hasNext = comic ? chapterNum < comic.chapters.length : false;
+  const hasNext = chapters.length > 0 ? chapterNum < Math.max(...chapters.map(c => c.number)) : false;
 
-  // Track reading history
   useEffect(() => {
     if (user && comic) {
       updateHistory(comic.slug, chapterNum);
     }
   }, [user, comic?.slug, chapterNum]);
 
-  // Scroll progress
   useEffect(() => {
     const handleScroll = () => {
       const scrollTop = window.scrollY;
@@ -51,6 +51,14 @@ export default function ComicReader() {
     }
   }, []);
 
+  if (comicLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+      </div>
+    );
+  }
+
   if (!comic || !currentChapter) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
@@ -61,12 +69,10 @@ export default function ComicReader() {
 
   return (
     <div className="min-h-screen bg-background" onClick={() => setShowUI(!showUI)}>
-      {/* Progress bar */}
       <div className="fixed top-0 left-0 right-0 z-50">
         <Progress value={scrollProgress} className="h-1 rounded-none" />
       </div>
 
-      {/* Top bar */}
       <AnimatePresence>
         {showUI && (
           <motion.div
@@ -103,7 +109,6 @@ export default function ComicReader() {
         )}
       </AnimatePresence>
 
-      {/* Pages */}
       <div className="max-w-3xl mx-auto" onClick={(e) => e.stopPropagation()}>
         {currentChapter.pages.map((page, i) => (
           <img
@@ -116,13 +121,11 @@ export default function ComicReader() {
           />
         ))}
 
-        {/* Comment Section */}
         <div className="px-4 py-6" onClick={(e) => e.stopPropagation()}>
           <CommentSection comicSlug={comic.slug} chapterNumber={chapterNum} />
         </div>
       </div>
 
-      {/* Bottom nav */}
       <AnimatePresence>
         {showUI && (
           <motion.div

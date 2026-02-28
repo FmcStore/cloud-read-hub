@@ -2,16 +2,18 @@ import { useState, useMemo } from "react";
 import { useSearchParams } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { ComicCard } from "@/components/comic/ComicCard";
-import { comics, genres, Comic } from "@/data/comics";
+import { genres } from "@/data/comics";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search } from "lucide-react";
+import { Search, Loader2 } from "lucide-react";
+import { useDbComics, DbComic } from "@/hooks/useComics";
 
 interface ComicListProps {
   status?: "Ongoing" | "Completed";
 }
 
 export default function ComicList({ status }: ComicListProps) {
+  const { data: allComics = [], isLoading } = useDbComics();
   const [searchParams] = useSearchParams();
   const initialQuery = searchParams.get("q") || "";
   const [query, setQuery] = useState(initialQuery);
@@ -19,7 +21,7 @@ export default function ComicList({ status }: ComicListProps) {
   const [selectedType, setSelectedType] = useState<string | null>(null);
 
   const filtered = useMemo(() => {
-    let result: Comic[] = comics;
+    let result: DbComic[] = allComics;
     if (status) result = result.filter((c) => c.status === status);
     if (query) {
       const q = query.toLowerCase();
@@ -32,7 +34,7 @@ export default function ComicList({ status }: ComicListProps) {
     if (selectedGenre) result = result.filter((c) => c.genres.includes(selectedGenre));
     if (selectedType) result = result.filter((c) => c.type === selectedType);
     return result;
-  }, [status, query, selectedGenre, selectedType]);
+  }, [allComics, status, query, selectedGenre, selectedType]);
 
   const title = status === "Completed" ? "Komik Tamat" : status === "Ongoing" ? "Komik Ongoing" : "Semua Komik";
 
@@ -79,7 +81,11 @@ export default function ComicList({ status }: ComicListProps) {
           ))}
         </div>
 
-        {filtered.length === 0 ? (
+        {isLoading ? (
+          <div className="flex justify-center py-12">
+            <Loader2 className="h-6 w-6 animate-spin text-muted-foreground" />
+          </div>
+        ) : filtered.length === 0 ? (
           <p className="text-center text-muted-foreground py-12">Tidak ada komik ditemukan.</p>
         ) : (
           <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">

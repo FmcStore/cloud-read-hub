@@ -1,9 +1,13 @@
-import { comics } from "@/data/comics";
 import { ComicCard } from "@/components/comic/ComicCard";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
+import { DbComic } from "@/hooks/useComics";
 
-export function LatestRelease() {
+interface LatestReleaseProps {
+  comics: DbComic[];
+}
+
+export function LatestRelease({ comics }: LatestReleaseProps) {
   const latest = comics.slice(0, 8);
 
   return (

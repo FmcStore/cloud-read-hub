@@ -1,19 +1,30 @@
 import { useParams, Link } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
-import { getComicBySlug } from "@/data/comics";
-import { Heart, Star, BookOpen, Clock } from "lucide-react";
+import { Heart, Star, BookOpen, Clock, Loader2 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion } from "framer-motion";
 import { ReviewSection } from "@/components/comic/ReviewSection";
+import { useDbComic, useDbChapters } from "@/hooks/useComics";
 
 export default function ComicDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const comic = getComicBySlug(slug || "");
+  const { data: comic, isLoading } = useDbComic(slug || "");
+  const { data: chapters = [] } = useDbChapters(comic?.id || "");
   const { user } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
+
+  if (isLoading) {
+    return (
+      <Layout>
+        <div className="flex justify-center items-center h-[60vh]">
+          <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+        </div>
+      </Layout>
+    );
+  }
 
   if (!comic) {
     return (
@@ -65,11 +76,13 @@ export default function ComicDetail() {
               ))}
             </div>
             <div className="flex gap-2">
-              <Button asChild>
-                <Link to={`/comic/${comic.slug}/1`}>
-                  <BookOpen className="h-4 w-4 mr-1" /> Baca Ch.1
-                </Link>
-              </Button>
+              {chapters.length > 0 && (
+                <Button asChild>
+                  <Link to={`/comic/${comic.slug}/1`}>
+                    <BookOpen className="h-4 w-4 mr-1" /> Baca Ch.1
+                  </Link>
+                </Button>
+              )}
               {user && (
                 <Button
                   variant={bookmarked ? "destructive" : "outline"}
@@ -89,7 +102,7 @@ export default function ComicDetail() {
             { label: "Author", value: comic.author },
             { label: "Artist", value: comic.artist },
             { label: "Released", value: comic.released },
-            { label: "Chapters", value: comic.chapters.length },
+            { label: "Chapters", value: chapters.length },
           ].map((item) => (
             <div key={item.label} className="bg-card rounded-lg p-3 border border-border/50">
               <p className="text-xs text-muted-foreground">{item.label}</p>
@@ -111,7 +124,7 @@ export default function ComicDetail() {
         <div className="mt-6 mb-8">
           <h2 className="text-lg font-display font-bold text-foreground mb-3">Daftar Chapter</h2>
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {comic.chapters
+            {chapters
               .slice()
               .reverse()
               .map((ch) => (
