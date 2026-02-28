@@ -53,14 +53,19 @@ export default function ComicList({ status }: ComicListProps) {
 
         <div className="flex gap-2 overflow-x-auto no-scrollbar mb-4 pb-2">
           {["Manhwa", "Manga", "Manhua"].map((t) => (
-            <Badge
+            <button
               key={t}
-              variant={selectedType === t ? "default" : "secondary"}
-              className="cursor-pointer shrink-0"
+              className={`px-3 py-1 text-xs font-semibold rounded-full shrink-0 transition-all ${
+                selectedType === t
+                  ? t === "Manhwa" ? "tag-manhwa ring-2 ring-[hsl(var(--tag-manhwa)/0.5)]" :
+                    t === "Manga" ? "tag-manga ring-2 ring-[hsl(var(--tag-manga)/0.5)]" :
+                    "tag-manhua ring-2 ring-[hsl(var(--tag-manhua)/0.5)]"
+                  : "bg-secondary text-secondary-foreground hover:bg-muted"
+              }`}
               onClick={() => setSelectedType(selectedType === t ? null : t)}
             >
               {t}
-            </Badge>
+            </button>
           ))}
           {genres.map((g) => (
             <Badge

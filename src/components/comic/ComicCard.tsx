@@ -8,6 +8,15 @@ interface ComicCardProps {
   index?: number;
 }
 
+function getTypeClass(type: string) {
+  switch (type) {
+    case "Manhwa": return "tag-manhwa";
+    case "Manga": return "tag-manga";
+    case "Manhua": return "tag-manhua";
+    default: return "bg-muted text-muted-foreground";
+  }
+}
+
 export function ComicCard({ comic, index = 0 }: ComicCardProps) {
   return (
     <motion.div
@@ -30,11 +39,11 @@ export function ComicCard({ comic, index = 0 }: ComicCardProps) {
         </div>
 
         <div className="absolute top-2 left-2 flex gap-1">
-          <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-primary/90 text-primary-foreground">
+          <span className={`px-2 py-0.5 text-[10px] font-semibold rounded-full ${getTypeClass(comic.type)}`}>
             {comic.type}
           </span>
           {comic.status === "Completed" && (
-            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-cyan/90 text-primary-foreground">
+            <span className="px-2 py-0.5 text-[10px] font-semibold rounded-full bg-emerald-500/20 text-emerald-400">
               END
             </span>
           )}

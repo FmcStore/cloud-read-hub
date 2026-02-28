@@ -52,8 +52,12 @@ export function HeroBanner() {
                 <Star className="h-4 w-4 text-amber fill-amber" />
                 <span className="text-sm font-semibold text-amber">{comic.rating}</span>
               </div>
+              <span className={`px-2 py-0.5 text-xs rounded-full font-semibold ${
+                comic.type === "Manhwa" ? "tag-manhwa" :
+                comic.type === "Manga" ? "tag-manga" : "tag-manhua"
+              }`}>{comic.type}</span>
               {comic.genres.slice(0, 3).map((g) => (
-                <span key={g} className="px-2 py-0.5 text-xs rounded-full bg-muted text-muted-foreground">
+                <span key={g} className="px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground">
                   {g}
                 </span>
               ))}

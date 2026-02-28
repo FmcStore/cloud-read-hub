@@ -3,11 +3,14 @@ import { useNavigate } from "react-router-dom";
 import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { Button } from "@/components/ui/button";
-import { LogOut, User, Mail } from "lucide-react";
+import { LogOut, User, Mail, Shield } from "lucide-react";
+import { useAdmin } from "@/hooks/useAdmin";
+import { Link } from "react-router-dom";
 
 export default function Profile() {
   const { user, loading, signOut } = useAuth();
   const navigate = useNavigate();
+  const { isAdmin } = useAdmin();
 
   useEffect(() => {
     if (!loading && !user) navigate("/login");
@@ -45,9 +48,15 @@ export default function Profile() {
             </div>
           </div>
 
+          {isAdmin && (
+            <Link to="/admin" className="flex items-center justify-center gap-2 w-full mt-6 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+              <Shield className="h-4 w-4" /> Admin Panel
+            </Link>
+          )}
+
           <Button
             variant="destructive"
-            className="w-full mt-6"
+            className={`w-full ${isAdmin ? 'mt-3' : 'mt-6'}`}
             onClick={async () => {
               await signOut();
               navigate("/");
