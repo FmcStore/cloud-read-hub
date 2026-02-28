@@ -11,8 +11,9 @@ import { useChapterRead } from "@/hooks/useComicApi";
 export default function ComicReader() {
   const { slug, chapter } = useParams<{ slug: string; chapter: string }>();
   const navigate = useNavigate();
+  const comicSlugParam = slug || "";
   const chapterSlug = chapter || "";
-  const { data: chapterData, isLoading } = useChapterRead(chapterSlug);
+  const { data: chapterData, isLoading } = useChapterRead(comicSlugParam, chapterSlug);
   const { user } = useAuth();
   const { updateHistory } = useHistory();
 
@@ -20,7 +21,7 @@ export default function ComicReader() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const comicSlug = chapterData?.comicSlug || slug || "";
+  const comicSlug = chapterData?.comicSlug || comicSlugParam;
 
   // Extract chapter number from title for history
   useEffect(() => {

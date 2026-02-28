@@ -100,7 +100,8 @@ export async function fetchComicDetail(slug: string): Promise<ApiComicDetail> {
   return data;
 }
 
-export async function fetchChapter(chapterSlug: string): Promise<ApiChapterRead> {
-  const data = await fetchApi<ApiChapterRead & { success: boolean }>(`kiryuu/chapter/${chapterSlug}`);
+export async function fetchChapter(comicSlug: string, chapterSlug: string): Promise<ApiChapterRead> {
+  const fullSlug = `${comicSlug}-${chapterSlug}`;
+  const data = await fetchApi<ApiChapterRead & { success: boolean }>(`kiryuu/chapter/${fullSlug}`);
   return data;
 }
