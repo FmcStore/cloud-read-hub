@@ -51,7 +51,10 @@ export default function ComicDetail() {
                 <Star className="h-4 w-4 text-amber fill-amber" />
                 <span className="text-sm font-semibold text-amber">{comic.rating}</span>
               </div>
-              <Badge variant="secondary">{comic.type}</Badge>
+              <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                comic.type === "Manhwa" ? "tag-manhwa" :
+                comic.type === "Manga" ? "tag-manga" : "tag-manhua"
+              }`}>{comic.type}</span>
               <Badge variant={comic.status === "Ongoing" ? "default" : "secondary"}>
                 {comic.status}
               </Badge>

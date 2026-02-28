@@ -14,6 +14,9 @@ import Profile from "./pages/Profile";
 import Bookmarks from "./pages/Bookmarks";
 import History from "./pages/History";
 import Install from "./pages/Install";
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import AdminComics from "./pages/admin/AdminComics";
+import AdminComments from "./pages/admin/AdminComments";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -37,6 +40,9 @@ const App = () => (
             <Route path="/bookmarks" element={<Bookmarks />} />
             <Route path="/history" element={<History />} />
             <Route path="/install" element={<Install />} />
+            <Route path="/admin" element={<AdminDashboard />} />
+            <Route path="/admin/comics" element={<AdminComics />} />
+            <Route path="/admin/comments" element={<AdminComments />} />
             <Route path="*" element={<NotFound />} />
           </Routes>
         </AuthProvider>
