@@ -7,6 +7,7 @@ import { Button } from "@/components/ui/button";
 import { useAuth } from "@/contexts/AuthContext";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion } from "framer-motion";
+import { ReviewSection } from "@/components/comic/ReviewSection";
 
 export default function ComicDetail() {
   const { slug } = useParams<{ slug: string }>();
@@ -99,6 +100,9 @@ export default function ComicDetail() {
           <h2 className="text-lg font-display font-bold text-foreground mb-2">Sinopsis</h2>
           <p className="text-sm text-foreground/70 leading-relaxed">{comic.synopsis}</p>
         </div>
+
+        {/* Rating & Review */}
+        <ReviewSection comicSlug={comic.slug} />
 
         {/* Chapters */}
         <div className="mt-6 mb-8">
