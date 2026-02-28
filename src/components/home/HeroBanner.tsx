@@ -31,7 +31,7 @@ export function HeroBanner() {
             <img
               src={comic.cover}
               alt={comic.title}
-              className="w-40 md:w-52 rounded-xl shadow-2xl shadow-primary/20 border-2 border-primary/30"
+              className="w-40 md:w-52 rounded-xl shadow-2xl shadow-black/50 border-2 border-border"
             />
           </motion.div>
 
@@ -41,7 +41,7 @@ export function HeroBanner() {
             transition={{ duration: 0.6, delay: 0.2 }}
             className="flex-1 max-w-xl"
           >
-            <span className="inline-block px-3 py-1 text-xs font-bold rounded-full bg-primary/20 text-primary border border-primary/30 mb-3">
+            <span className="inline-block px-3 py-1 text-xs font-bold rounded-full bg-amber/20 text-amber border border-amber/30 mb-3">
               ⭐ FEATURED
             </span>
             <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-2">
@@ -65,7 +65,7 @@ export function HeroBanner() {
             <p className="text-sm text-foreground/60 line-clamp-2 mb-4">{comic.synopsis}</p>
             <Link
               to={`/comic/${comic.slug}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-primary text-primary-foreground font-semibold hover:bg-primary/90 transition-colors shadow-lg shadow-primary/30"
+              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-colors shadow-lg shadow-black/30"
             >
               <BookOpen className="h-4 w-4" /> Baca Sekarang
             </Link>

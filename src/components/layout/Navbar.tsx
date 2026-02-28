@@ -101,7 +101,7 @@ export function Navbar() {
               </Link>
             </>
           ) : (
-            <Link to="/login" className="px-4 py-2 text-sm font-medium rounded-lg bg-primary text-primary-foreground hover:bg-primary/90 transition-colors">
+            <Link to="/login" className="px-4 py-2 text-sm font-medium rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors">
               Login
             </Link>
           )}

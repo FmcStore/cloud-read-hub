@@ -49,7 +49,7 @@ export default function Profile() {
           </div>
 
           {isAdmin && (
-            <Link to="/admin" className="flex items-center justify-center gap-2 w-full mt-6 px-4 py-2.5 rounded-lg bg-primary text-primary-foreground font-medium hover:bg-primary/90 transition-colors">
+            <Link to="/admin" className="flex items-center justify-center gap-2 w-full mt-6 px-4 py-2.5 rounded-lg bg-foreground text-background font-medium hover:bg-foreground/90 transition-colors">
               <Shield className="h-4 w-4" /> Admin Panel
             </Link>
           )}

@@ -74,7 +74,7 @@ export default function Login() {
 
           <p className="text-center text-sm text-muted-foreground mt-4">
             Belum punya akun?{" "}
-            <Link to="/register" className="text-primary hover:underline">
+            <Link to="/register" className="text-foreground font-semibold hover:underline">
               Daftar
             </Link>
           </p>

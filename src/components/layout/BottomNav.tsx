@@ -36,18 +36,18 @@ export function BottomNav() {
               {isActive && (
                 <motion.div
                   layoutId="bottomnav-active"
-                  className="absolute -top-1 w-8 h-1 rounded-full bg-primary"
+                  className="absolute -top-1 w-8 h-1 rounded-full bg-foreground"
                   transition={{ type: "spring", stiffness: 500, damping: 30 }}
                 />
               )}
               <item.icon
                 className={`h-5 w-5 transition-colors ${
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive ? "text-foreground" : "text-muted-foreground"
                 }`}
               />
               <span
                 className={`text-[10px] font-medium transition-colors ${
-                  isActive ? "text-primary" : "text-muted-foreground"
+                  isActive ? "text-foreground" : "text-muted-foreground"
                 }`}
               >
                 {item.label}

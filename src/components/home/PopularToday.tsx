@@ -8,7 +8,7 @@ export function PopularToday() {
   return (
     <section className="container mx-auto px-4 py-8">
       <div className="flex items-center gap-2 mb-5">
-        <TrendingUp className="h-5 w-5 text-amber" />
+        <TrendingUp className="h-5 w-5 text-foreground" />
         <h2 className="text-xl font-display font-bold text-foreground">Populer Hari Ini</h2>
       </div>
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
