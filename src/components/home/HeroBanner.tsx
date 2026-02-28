@@ -1,10 +1,10 @@
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BookOpen, Star } from "lucide-react";
-import { DbComic } from "@/hooks/useComics";
+import { ApiComicListItem } from "@/lib/api/comic-api";
 
 interface HeroBannerProps {
-  comics: DbComic[];
+  comics: ApiComicListItem[];
 }
 
 export function HeroBanner({ comics }: HeroBannerProps) {
@@ -15,7 +15,7 @@ export function HeroBanner({ comics }: HeroBannerProps) {
     <section className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
       <div className="absolute inset-0">
         <img
-          src={comic.cover}
+          src={comic.imageSrc}
           alt={comic.title}
           className="w-full h-full object-cover blur-sm scale-110"
         />
@@ -32,7 +32,7 @@ export function HeroBanner({ comics }: HeroBannerProps) {
             className="hidden sm:block"
           >
             <img
-              src={comic.cover}
+              src={comic.imageSrc}
               alt={comic.title}
               className="w-40 md:w-52 rounded-xl shadow-2xl shadow-black/50 border-2 border-border"
             />
@@ -45,7 +45,7 @@ export function HeroBanner({ comics }: HeroBannerProps) {
             className="flex-1 max-w-xl"
           >
             <span className="inline-block px-3 py-1 text-xs font-bold rounded-full bg-amber/20 text-amber border border-amber/30 mb-3">
-              ⭐ FEATURED
+              ⭐ REKOMENDASI
             </span>
             <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-2">
               {comic.title}
@@ -55,17 +55,12 @@ export function HeroBanner({ comics }: HeroBannerProps) {
                 <Star className="h-4 w-4 text-amber fill-amber" />
                 <span className="text-sm font-semibold text-amber">{comic.rating}</span>
               </div>
-              <span className={`px-2 py-0.5 text-xs rounded-full font-semibold ${
-                comic.type === "Manhwa" ? "tag-manhwa" :
-                comic.type === "Manga" ? "tag-manga" : "tag-manhua"
-              }`}>{comic.type}</span>
-              {comic.genres.slice(0, 3).map((g) => (
-                <span key={g} className="px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground">
-                  {g}
+              {comic.chapter && (
+                <span className="px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground">
+                  {comic.chapter}
                 </span>
-              ))}
+              )}
             </div>
-            <p className="text-sm text-foreground/60 line-clamp-2 mb-4">{comic.synopsis}</p>
             <Link
               to={`/comic/${comic.slug}`}
               className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-colors shadow-lg shadow-black/30"

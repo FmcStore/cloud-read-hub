@@ -7,12 +7,11 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useBookmarks } from "@/hooks/useBookmarks";
 import { motion } from "framer-motion";
 import { ReviewSection } from "@/components/comic/ReviewSection";
-import { useDbComic, useDbChapters } from "@/hooks/useComics";
+import { useComicDetail } from "@/hooks/useComicApi";
 
 export default function ComicDetail() {
   const { slug } = useParams<{ slug: string }>();
-  const { data: comic, isLoading } = useDbComic(slug || "");
-  const { data: chapters = [] } = useDbChapters(comic?.id || "");
+  const { data: comic, isLoading } = useComicDetail(slug || "");
   const { user } = useAuth();
   const { isBookmarked, toggleBookmark } = useBookmarks();
 
@@ -36,13 +35,14 @@ export default function ComicDetail() {
     );
   }
 
-  const bookmarked = isBookmarked(comic.slug);
+  const bookmarked = slug ? isBookmarked(slug) : false;
+  const firstChapter = comic.chapters.length > 0 ? comic.chapters[comic.chapters.length - 1] : null;
 
   return (
     <Layout>
       {/* Banner */}
       <div className="relative w-full h-[40vh] overflow-hidden">
-        <img src={comic.cover} alt={comic.title} className="w-full h-full object-cover blur-md scale-110" />
+        <img src={comic.imageSrc} alt={comic.title} className="w-full h-full object-cover blur-md scale-110" />
         <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
       </div>
 
@@ -51,24 +51,26 @@ export default function ComicDetail() {
           <motion.img
             initial={{ opacity: 0, scale: 0.9 }}
             animate={{ opacity: 1, scale: 1 }}
-            src={comic.cover}
+            src={comic.imageSrc}
             alt={comic.title}
             className="w-32 md:w-44 rounded-xl shadow-2xl shadow-black/50 border-2 border-border shrink-0"
           />
           <div className="flex-1 pt-8">
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">{comic.title}</h1>
+            {comic.alternative && (
+              <p className="text-xs text-muted-foreground mb-2">{comic.alternative}</p>
+            )}
             <div className="flex items-center gap-2 mb-3 flex-wrap">
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-amber fill-amber" />
                 <span className="text-sm font-semibold text-amber">{comic.rating}</span>
               </div>
-              <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
-                comic.type === "Manhwa" ? "tag-manhwa" :
-                comic.type === "Manga" ? "tag-manga" : "tag-manhua"
-              }`}>{comic.type}</span>
-              <Badge variant={comic.status === "Ongoing" ? "default" : "secondary"}>
-                {comic.status}
-              </Badge>
+              {comic.type && (
+                <span className={`px-2 py-0.5 text-xs font-semibold rounded-full ${
+                  comic.type === "Manhwa" ? "tag-manhwa" :
+                  comic.type === "Manga" ? "tag-manga" : "tag-manhua"
+                }`}>{comic.type}</span>
+              )}
             </div>
             <div className="flex flex-wrap gap-1.5 mb-4">
               {comic.genres.map((g) => (
@@ -76,17 +78,17 @@ export default function ComicDetail() {
               ))}
             </div>
             <div className="flex gap-2">
-              {chapters.length > 0 && (
+              {firstChapter && (
                 <Button asChild>
-                  <Link to={`/comic/${comic.slug}/1`}>
+                  <Link to={`/comic/${slug}/read/${firstChapter.slug}`}>
                     <BookOpen className="h-4 w-4 mr-1" /> Baca Ch.1
                   </Link>
                 </Button>
               )}
-              {user && (
+              {user && slug && (
                 <Button
                   variant={bookmarked ? "destructive" : "outline"}
-                  onClick={() => toggleBookmark(comic.slug)}
+                  onClick={() => toggleBookmark(slug)}
                 >
                   <Heart className={`h-4 w-4 mr-1 ${bookmarked ? "fill-current" : ""}`} />
                   {bookmarked ? "Hapus" : "Bookmark"}
@@ -99,10 +101,10 @@ export default function ComicDetail() {
         {/* Info */}
         <div className="mt-6 grid grid-cols-2 md:grid-cols-4 gap-3">
           {[
-            { label: "Author", value: comic.author },
-            { label: "Artist", value: comic.artist },
-            { label: "Released", value: comic.released },
-            { label: "Chapters", value: chapters.length },
+            { label: "Tipe", value: comic.type || "-" },
+            { label: "Rilis", value: comic.released || "-" },
+            { label: "Diikuti", value: comic.followedBy || "-" },
+            { label: "Chapters", value: comic.chapters.length },
           ].map((item) => (
             <div key={item.label} className="bg-card rounded-lg p-3 border border-border/50">
               <p className="text-xs text-muted-foreground">{item.label}</p>
@@ -118,28 +120,25 @@ export default function ComicDetail() {
         </div>
 
         {/* Rating & Review */}
-        <ReviewSection comicSlug={comic.slug} />
+        {slug && <ReviewSection comicSlug={slug} />}
 
         {/* Chapters */}
         <div className="mt-6 mb-8">
           <h2 className="text-lg font-display font-bold text-foreground mb-3">Daftar Chapter</h2>
           <div className="space-y-2 max-h-96 overflow-y-auto">
-            {chapters
-              .slice()
-              .reverse()
-              .map((ch) => (
-                <Link
-                  key={ch.number}
-                  to={`/comic/${comic.slug}/${ch.number}`}
-                  className="flex items-center justify-between p-3 rounded-lg bg-card border border-border/50 hover:border-foreground/30 hover:bg-muted/50 transition-colors"
-                >
-                  <span className="text-sm font-medium text-foreground">Chapter {ch.number}</span>
-                  <div className="flex items-center gap-1 text-xs text-muted-foreground">
-                    <Clock className="h-3 w-3" />
-                    <span>{ch.date}</span>
-                  </div>
-                </Link>
-              ))}
+            {comic.chapters.map((ch) => (
+              <Link
+                key={ch.slug}
+                to={`/comic/${slug}/read/${ch.slug}`}
+                className="flex items-center justify-between p-3 rounded-lg bg-card border border-border/50 hover:border-foreground/30 hover:bg-muted/50 transition-colors"
+              >
+                <span className="text-sm font-medium text-foreground">{ch.title}</span>
+                <div className="flex items-center gap-1 text-xs text-muted-foreground">
+                  <Clock className="h-3 w-3" />
+                  <span>{ch.date}</span>
+                </div>
+              </Link>
+            ))}
           </div>
         </div>
       </div>

@@ -6,14 +6,13 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useHistory } from "@/hooks/useHistory";
 import { motion, AnimatePresence } from "framer-motion";
 import { CommentSection } from "@/components/comic/CommentSection";
-import { useDbComic, useDbChapters } from "@/hooks/useComics";
+import { useChapterRead } from "@/hooks/useComicApi";
 
 export default function ComicReader() {
   const { slug, chapter } = useParams<{ slug: string; chapter: string }>();
   const navigate = useNavigate();
-  const { data: comic, isLoading: comicLoading } = useDbComic(slug || "");
-  const { data: chapters = [] } = useDbChapters(comic?.id || "");
-  const chapterNum = parseInt(chapter || "1");
+  const chapterSlug = chapter || "";
+  const { data: chapterData, isLoading } = useChapterRead(chapterSlug);
   const { user } = useAuth();
   const { updateHistory } = useHistory();
 
@@ -21,15 +20,20 @@ export default function ComicReader() {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const [scrollProgress, setScrollProgress] = useState(0);
 
-  const currentChapter = chapters.find((c) => c.number === chapterNum);
-  const hasPrev = chapterNum > 1;
-  const hasNext = chapters.length > 0 ? chapterNum < Math.max(...chapters.map(c => c.number)) : false;
+  const comicSlug = chapterData?.comicSlug || slug || "";
+
+  // Extract chapter number from title for history
+  useEffect(() => {
+    if (user && chapterData && comicSlug) {
+      const match = chapterData.title.match(/Chapter\s+(\d+)/i);
+      const chNum = match ? parseInt(match[1]) : 1;
+      updateHistory(comicSlug, chNum);
+    }
+  }, [user, chapterData?.title, comicSlug]);
 
   useEffect(() => {
-    if (user && comic) {
-      updateHistory(comic.slug, chapterNum);
-    }
-  }, [user, comic?.slug, chapterNum]);
+    window.scrollTo(0, 0);
+  }, [chapterSlug]);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -51,7 +55,7 @@ export default function ComicReader() {
     }
   }, []);
 
-  if (comicLoading) {
+  if (isLoading) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
@@ -59,7 +63,7 @@ export default function ComicReader() {
     );
   }
 
-  if (!comic || !currentChapter) {
+  if (!chapterData) {
     return (
       <div className="min-h-screen bg-background flex items-center justify-center">
         <p className="text-foreground">Chapter tidak ditemukan</p>
@@ -84,16 +88,15 @@ export default function ComicReader() {
           >
             <div className="flex items-center justify-between h-14 px-4">
               <div className="flex items-center gap-2">
-                <Link to={`/comic/${comic.slug}`} className="p-2 rounded-lg hover:bg-muted/50">
+                <Link to={`/comic/${comicSlug}`} className="p-2 rounded-lg hover:bg-muted/50">
                   <ChevronLeft className="h-5 w-5 text-foreground" />
                 </Link>
                 <div>
-                  <p className="text-sm font-medium text-foreground line-clamp-1">{comic.title}</p>
-                  <p className="text-xs text-muted-foreground">Chapter {chapterNum}</p>
+                  <p className="text-sm font-medium text-foreground line-clamp-1">{chapterData.title}</p>
                 </div>
               </div>
               <div className="flex items-center gap-1">
-                <Link to={`/comic/${comic.slug}`} className="p-2 rounded-lg hover:bg-muted/50">
+                <Link to={`/comic/${comicSlug}`} className="p-2 rounded-lg hover:bg-muted/50">
                   <List className="h-5 w-5 text-foreground/70" />
                 </Link>
                 <button onClick={toggleFullscreen} className="p-2 rounded-lg hover:bg-muted/50">
@@ -110,7 +113,7 @@ export default function ComicReader() {
       </AnimatePresence>
 
       <div className="max-w-3xl mx-auto" onClick={(e) => e.stopPropagation()}>
-        {currentChapter.pages.map((page, i) => (
+        {chapterData.images.map((page, i) => (
           <img
             key={i}
             src={page}
@@ -122,7 +125,7 @@ export default function ComicReader() {
         ))}
 
         <div className="px-4 py-6" onClick={(e) => e.stopPropagation()}>
-          <CommentSection comicSlug={comic.slug} chapterNumber={chapterNum} />
+          <CommentSection comicSlug={comicSlug} chapterNumber={1} />
         </div>
       </div>
 
@@ -137,8 +140,8 @@ export default function ComicReader() {
           >
             <div className="flex items-center justify-between h-14 px-4">
               <button
-                disabled={!hasPrev}
-                onClick={() => navigate(`/comic/${comic.slug}/${chapterNum - 1}`)}
+                disabled={!chapterData.prevSlug}
+                onClick={() => navigate(`/comic/${comicSlug}/read/${chapterData.prevSlug}`)}
                 className="flex items-center gap-1 px-4 py-2 rounded-lg bg-foreground/10 text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-4 w-4" /> Prev
@@ -147,8 +150,8 @@ export default function ComicReader() {
                 <Home className="h-5 w-5 text-foreground/70" />
               </Link>
               <button
-                disabled={!hasNext}
-                onClick={() => navigate(`/comic/${comic.slug}/${chapterNum + 1}`)}
+                disabled={!chapterData.nextSlug}
+                onClick={() => navigate(`/comic/${comicSlug}/read/${chapterData.nextSlug}`)}
                 className="flex items-center gap-1 px-4 py-2 rounded-lg bg-foreground/10 text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Next <ChevronRight className="h-4 w-4" />

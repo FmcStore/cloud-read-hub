@@ -1,14 +1,14 @@
 import { ComicCard } from "@/components/comic/ComicCard";
 import { Sparkles } from "lucide-react";
 import { Link } from "react-router-dom";
-import { DbComic } from "@/hooks/useComics";
+import { ApiComicListItem } from "@/lib/api/comic-api";
 
 interface LatestReleaseProps {
-  comics: DbComic[];
+  comics: ApiComicListItem[];
 }
 
 export function LatestRelease({ comics }: LatestReleaseProps) {
-  const latest = comics.slice(0, 8);
+  const latest = comics.slice(0, 12);
 
   return (
     <section className="container mx-auto px-4 py-8">
@@ -23,7 +23,11 @@ export function LatestRelease({ comics }: LatestReleaseProps) {
       </div>
       <div className="grid grid-cols-3 sm:grid-cols-4 md:grid-cols-5 lg:grid-cols-6 gap-3 md:gap-4">
         {latest.map((comic, i) => (
-          <ComicCard key={comic.slug} comic={comic} index={i} />
+          <ComicCard
+            key={comic.slug}
+            comic={{ slug: comic.slug, title: comic.title, cover: comic.imageSrc, rating: comic.rating, chapter: comic.chapter }}
+            index={i}
+          />
         ))}
       </div>
     </section>
