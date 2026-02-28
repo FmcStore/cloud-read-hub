@@ -101,7 +101,9 @@ export async function fetchComicDetail(slug: string): Promise<ApiComicDetail> {
 }
 
 export async function fetchChapter(comicSlug: string, chapterSlug: string): Promise<ApiChapterRead> {
-  const fullSlug = `${comicSlug}-${chapterSlug}`;
+  // Strip numeric suffix (e.g., "chapter-01.730192" -> "chapter-01")
+  const cleanSlug = chapterSlug.replace(/\.\d+$/, "");
+  const fullSlug = `${comicSlug}-${cleanSlug}`;
   const data = await fetchApi<ApiChapterRead & { success: boolean }>(`kiryuu/chapter/${fullSlug}`);
   return data;
 }
