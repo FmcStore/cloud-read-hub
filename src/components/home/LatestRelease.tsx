@@ -10,10 +10,10 @@ export function LatestRelease() {
     <section className="container mx-auto px-4 py-8">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
-          <Sparkles className="h-5 w-5 text-cyan" />
+          <Sparkles className="h-5 w-5 text-foreground" />
           <h2 className="text-xl font-display font-bold text-foreground">Rilis Terbaru</h2>
         </div>
-        <Link to="/ongoing" className="text-sm text-primary hover:underline">
+        <Link to="/ongoing" className="text-sm text-muted-foreground hover:text-foreground hover:underline">
           Lihat Semua →
         </Link>
       </div>

@@ -136,7 +136,7 @@ export default function ComicReader() {
               <button
                 disabled={!hasPrev}
                 onClick={() => navigate(`/comic/${comic.slug}/${chapterNum - 1}`)}
-                className="flex items-center gap-1 px-4 py-2 rounded-lg bg-primary/20 text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-4 py-2 rounded-lg bg-foreground/10 text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 <ChevronLeft className="h-4 w-4" /> Prev
               </button>
@@ -146,7 +146,7 @@ export default function ComicReader() {
               <button
                 disabled={!hasNext}
                 onClick={() => navigate(`/comic/${comic.slug}/${chapterNum + 1}`)}
-                className="flex items-center gap-1 px-4 py-2 rounded-lg bg-primary/20 text-primary disabled:opacity-30 disabled:cursor-not-allowed"
+                className="flex items-center gap-1 px-4 py-2 rounded-lg bg-foreground/10 text-foreground disabled:opacity-30 disabled:cursor-not-allowed"
               >
                 Next <ChevronRight className="h-4 w-4" />
               </button>

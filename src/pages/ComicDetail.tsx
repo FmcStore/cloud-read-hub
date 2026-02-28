@@ -42,7 +42,7 @@ export default function ComicDetail() {
             animate={{ opacity: 1, scale: 1 }}
             src={comic.cover}
             alt={comic.title}
-            className="w-32 md:w-44 rounded-xl shadow-2xl shadow-primary/20 border-2 border-primary/30 shrink-0"
+            className="w-32 md:w-44 rounded-xl shadow-2xl shadow-black/50 border-2 border-border shrink-0"
           />
           <div className="flex-1 pt-8">
             <h1 className="text-2xl md:text-3xl font-display font-bold text-foreground mb-2">{comic.title}</h1>
@@ -118,7 +118,7 @@ export default function ComicDetail() {
                 <Link
                   key={ch.number}
                   to={`/comic/${comic.slug}/${ch.number}`}
-                  className="flex items-center justify-between p-3 rounded-lg bg-card border border-border/50 hover:border-primary/50 hover:bg-muted/50 transition-colors"
+                  className="flex items-center justify-between p-3 rounded-lg bg-card border border-border/50 hover:border-foreground/30 hover:bg-muted/50 transition-colors"
                 >
                   <span className="text-sm font-medium text-foreground">Chapter {ch.number}</span>
                   <div className="flex items-center gap-1 text-xs text-muted-foreground">

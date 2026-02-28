@@ -26,7 +26,7 @@ export function ComicCard({ comic, index = 0 }: ComicCardProps) {
     >
       <Link
         to={`/comic/${comic.slug}`}
-        className="group block relative overflow-hidden rounded-xl bg-card border border-border/50 hover:border-primary/50 transition-all duration-300 hover:shadow-lg hover:shadow-primary/10 hover:-translate-y-1"
+        className="group block relative overflow-hidden rounded-xl bg-card border border-border/50 hover:border-foreground/30 transition-all duration-300 hover:shadow-lg hover:shadow-black/20 hover:-translate-y-1"
       >
         <div className="aspect-[3/4] overflow-hidden">
           <img
