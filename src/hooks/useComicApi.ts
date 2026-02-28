@@ -50,11 +50,11 @@ export function useComicDetail(slug: string) {
   });
 }
 
-export function useChapterRead(chapterSlug: string) {
+export function useChapterRead(comicSlug: string, chapterSlug: string) {
   return useQuery({
-    queryKey: ["api-chapter", chapterSlug],
-    queryFn: () => fetchChapter(chapterSlug),
-    enabled: !!chapterSlug,
+    queryKey: ["api-chapter", comicSlug, chapterSlug],
+    queryFn: () => fetchChapter(comicSlug, chapterSlug),
+    enabled: !!comicSlug && !!chapterSlug,
     staleTime: 10 * 60 * 1000,
   });
 }
