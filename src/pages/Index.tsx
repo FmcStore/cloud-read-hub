@@ -2,11 +2,15 @@ import { Layout } from "@/components/layout/Layout";
 import { HeroBanner } from "@/components/home/HeroBanner";
 import { PopularToday } from "@/components/home/PopularToday";
 import { LatestRelease } from "@/components/home/LatestRelease";
-import { useDbComics } from "@/hooks/useComics";
+import { useLatestComics, usePopularComics, useRecommendations } from "@/hooks/useComicApi";
 import { Loader2 } from "lucide-react";
 
 const Index = () => {
-  const { data: comics = [], isLoading } = useDbComics();
+  const { data: latest = [], isLoading: latestLoading } = useLatestComics();
+  const { data: popular = [], isLoading: popularLoading } = usePopularComics();
+  const { data: recommendations = [] } = useRecommendations();
+
+  const isLoading = latestLoading || popularLoading;
 
   if (isLoading) {
     return (
@@ -18,14 +22,11 @@ const Index = () => {
     );
   }
 
-  const featured = comics.filter((c) => c.featured);
-  const popular = comics.filter((c) => c.popular);
-
   return (
     <Layout>
-      <HeroBanner comics={featured} />
+      <HeroBanner comics={recommendations.slice(0, 5)} />
       <PopularToday comics={popular} />
-      <LatestRelease comics={comics} />
+      <LatestRelease comics={latest} />
     </Layout>
   );
 };

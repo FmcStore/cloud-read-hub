@@ -1,9 +1,9 @@
 import { ComicCard } from "@/components/comic/ComicCard";
 import { TrendingUp } from "lucide-react";
-import { DbComic } from "@/hooks/useComics";
+import { ApiComicListItem } from "@/lib/api/comic-api";
 
 interface PopularTodayProps {
-  comics: DbComic[];
+  comics: ApiComicListItem[];
 }
 
 export function PopularToday({ comics }: PopularTodayProps) {
@@ -18,7 +18,10 @@ export function PopularToday({ comics }: PopularTodayProps) {
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
         {comics.map((comic, i) => (
           <div key={comic.slug} className="min-w-[150px] max-w-[150px] md:min-w-[180px] md:max-w-[180px]">
-            <ComicCard comic={comic} index={i} />
+            <ComicCard
+              comic={{ slug: comic.slug, title: comic.title, cover: comic.imageSrc, rating: comic.rating, chapter: comic.chapter }}
+              index={i}
+            />
           </div>
         ))}
       </div>

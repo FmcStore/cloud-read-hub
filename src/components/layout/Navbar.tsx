@@ -1,11 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, Clock, Heart, User, Search } from "lucide-react";
-import { useState, useMemo, useRef, useEffect } from "react";
+import { Search } from "lucide-react";
+import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
 import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
-import { useDbComics } from "@/hooks/useComics";
+import { Heart, User } from "lucide-react";
+import { useSearchComics } from "@/hooks/useComicApi";
 
 export function Navbar() {
   const { user } = useAuth();
@@ -13,13 +14,7 @@ export function Navbar() {
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
   const inputRef = useRef<HTMLInputElement>(null);
-  const { data: allComics = [] } = useDbComics();
-
-  const results = useMemo(() => {
-    if (query.trim().length < 2) return [];
-    const q = query.trim().toLowerCase();
-    return allComics.filter(c => c.title.toLowerCase().includes(q) || c.genres.some(g => g.toLowerCase().includes(q))).slice(0, 5);
-  }, [query, allComics]);
+  const { data: results = [] } = useSearchComics(query);
 
   const handleSearch = (e: React.FormEvent) => {
     e.preventDefault();
@@ -69,19 +64,18 @@ export function Navbar() {
                     onBlur={() => setTimeout(() => { if (!query) setSearchOpen(false); }, 200)}
                   />
                 </form>
-                {/* Autocomplete dropdown */}
                 {results.length > 0 && (
                   <div className="absolute top-full left-0 right-0 mt-1 bg-card border border-border rounded-lg shadow-lg overflow-hidden z-50">
-                    {results.map((comic) => (
+                    {results.slice(0, 5).map((comic) => (
                       <button
                         key={comic.slug}
                         onMouseDown={() => handleSelect(comic.slug)}
                         className="flex items-center gap-3 w-full p-2 hover:bg-muted/50 transition-colors text-left"
                       >
-                        <img src={comic.cover} alt={comic.title} className="w-8 h-10 rounded object-cover shrink-0" />
+                        <img src={comic.image} alt={comic.title} className="w-8 h-10 rounded object-cover shrink-0" />
                         <div className="min-w-0">
                           <p className="text-sm font-medium text-foreground truncate">{comic.title}</p>
-                          <p className="text-[10px] text-muted-foreground">{comic.type} · {comic.status}</p>
+                          <p className="text-[10px] text-muted-foreground">⭐ {comic.rating}</p>
                         </div>
                       </button>
                     ))}

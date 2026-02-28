@@ -33,7 +33,7 @@ const App = () => (
             <Route path="/ongoing" element={<ComicList status="Ongoing" />} />
             <Route path="/completed" element={<ComicList status="Completed" />} />
             <Route path="/comic/:slug" element={<ComicDetail />} />
-            <Route path="/comic/:slug/:chapter" element={<ComicReader />} />
+            <Route path="/comic/:slug/read/:chapter" element={<ComicReader />} />
             <Route path="/login" element={<Login />} />
             <Route path="/register" element={<Register />} />
             <Route path="/profile" element={<Profile />} />
