@@ -1,10 +1,18 @@
 import { Link } from "react-router-dom";
-import { Comic } from "@/data/comics";
 import { Star } from "lucide-react";
 import { motion } from "framer-motion";
 
+interface ComicCardComic {
+  slug: string;
+  title: string;
+  cover: string;
+  type: string;
+  status: string;
+  rating: number;
+}
+
 interface ComicCardProps {
-  comic: Comic;
+  comic: ComicCardComic;
   index?: number;
 }
 

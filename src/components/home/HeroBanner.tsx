@@ -1,11 +1,14 @@
-import { getFeaturedComics } from "@/data/comics";
 import { Link } from "react-router-dom";
 import { motion } from "framer-motion";
 import { BookOpen, Star } from "lucide-react";
+import { DbComic } from "@/hooks/useComics";
 
-export function HeroBanner() {
-  const featured = getFeaturedComics();
-  const comic = featured[0];
+interface HeroBannerProps {
+  comics: DbComic[];
+}
+
+export function HeroBanner({ comics }: HeroBannerProps) {
+  const comic = comics[0];
   if (!comic) return null;
 
   return (

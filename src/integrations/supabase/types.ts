@@ -35,6 +35,44 @@ export type Database = {
         }
         Relationships: []
       }
+      chapters: {
+        Row: {
+          comic_id: string
+          created_at: string
+          date: string
+          id: string
+          number: number
+          pages: string[]
+          title: string
+        }
+        Insert: {
+          comic_id: string
+          created_at?: string
+          date?: string
+          id?: string
+          number: number
+          pages?: string[]
+          title?: string
+        }
+        Update: {
+          comic_id?: string
+          created_at?: string
+          date?: string
+          id?: string
+          number?: number
+          pages?: string[]
+          title?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "chapters_comic_id_fkey"
+            columns: ["comic_id"]
+            isOneToOne: false
+            referencedRelation: "comics"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       comic_reviews: {
         Row: {
           comic_slug: string
@@ -62,6 +100,63 @@ export type Database = {
           review?: string | null
           updated_at?: string
           user_id?: string
+        }
+        Relationships: []
+      }
+      comics: {
+        Row: {
+          artist: string
+          author: string
+          cover: string
+          created_at: string
+          featured: boolean
+          genres: string[]
+          id: string
+          popular: boolean
+          rating: number
+          released: number
+          slug: string
+          status: string
+          synopsis: string
+          title: string
+          type: string
+          updated_at: string
+        }
+        Insert: {
+          artist?: string
+          author?: string
+          cover?: string
+          created_at?: string
+          featured?: boolean
+          genres?: string[]
+          id?: string
+          popular?: boolean
+          rating?: number
+          released?: number
+          slug: string
+          status?: string
+          synopsis?: string
+          title: string
+          type?: string
+          updated_at?: string
+        }
+        Update: {
+          artist?: string
+          author?: string
+          cover?: string
+          created_at?: string
+          featured?: boolean
+          genres?: string[]
+          id?: string
+          popular?: boolean
+          rating?: number
+          released?: number
+          slug?: string
+          status?: string
+          synopsis?: string
+          title?: string
+          type?: string
+          updated_at?: string
         }
         Relationships: []
       }
