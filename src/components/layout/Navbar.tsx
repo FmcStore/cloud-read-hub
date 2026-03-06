@@ -36,7 +36,7 @@ export function Navbar() {
       <div className="container mx-auto flex items-center justify-between h-14 px-4">
         {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <BookOpen className="h-6 w-6 text-foreground" />
+          <img src="https://raw.githubusercontent.com/tralalawabi-art/datastore/storage/uploads/1772198919120.jpg" alt="FmcComic" className="h-6 w-6 rounded-md object-cover" />
           <span className="text-xl font-display font-bold text-foreground">FmcComic</span>
         </Link>
 
