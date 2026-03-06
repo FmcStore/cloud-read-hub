@@ -1,14 +1,14 @@
 import { Link, useLocation } from "react-router-dom";
-import { Home, BookOpen, Clock, Heart, User } from "lucide-react";
+import { Home, Compass, Bookmark, Clock, User } from "lucide-react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion } from "framer-motion";
 
 const navItems = [
   { to: "/", icon: Home, label: "Home" },
-  { to: "/ongoing", icon: BookOpen, label: "Ongoing" },
+  { to: "/ongoing", icon: Compass, label: "Browse" },
+  { to: "/bookmarks", icon: Bookmark, label: "Favorit", auth: true },
   { to: "/history", icon: Clock, label: "History", auth: true },
-  { to: "/bookmarks", icon: Heart, label: "Bookmark", auth: true },
-  { to: "/profile", icon: User, label: "Profil", auth: true },
+  { to: "/profile", icon: User, label: "Profile", auth: true },
 ];
 
 export function BottomNav() {
