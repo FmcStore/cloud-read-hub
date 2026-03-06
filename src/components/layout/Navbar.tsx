@@ -42,6 +42,7 @@ export function Navbar() {
           <Link to="/" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Home</Link>
           <Link to="/ongoing" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Ongoing</Link>
           <Link to="/completed" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Completed</Link>
+          <Link to="/ongoing" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Browse</Link>
         </nav>
 
         <div className="flex items-center gap-2 relative">

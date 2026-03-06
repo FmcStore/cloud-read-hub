@@ -1,74 +1,135 @@
 import { Link } from "react-router-dom";
-import { motion } from "framer-motion";
-import { BookOpen, Star } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { BookOpen, Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { ApiComicListItem } from "@/lib/api/comic-api";
+import { useState, useEffect, useCallback } from "react";
 
 interface HeroBannerProps {
   comics: ApiComicListItem[];
 }
 
 export function HeroBanner({ comics }: HeroBannerProps) {
-  const comic = comics[0];
-  if (!comic) return null;
+  const slides = comics.slice(0, 6);
+  const [current, setCurrent] = useState(0);
+
+  const next = useCallback(() => {
+    setCurrent((c) => (c + 1) % slides.length);
+  }, [slides.length]);
+
+  const prev = useCallback(() => {
+    setCurrent((c) => (c - 1 + slides.length) % slides.length);
+  }, [slides.length]);
+
+  useEffect(() => {
+    const timer = setInterval(next, 6000);
+    return () => clearInterval(timer);
+  }, [next]);
+
+  if (slides.length === 0) return null;
+  const comic = slides[current];
 
   return (
-    <section className="relative w-full h-[60vh] md:h-[70vh] overflow-hidden">
-      <div className="absolute inset-0">
-        <img
-          src={comic.imageSrc}
-          alt={comic.title}
-          className="w-full h-full object-cover blur-sm scale-110"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-background via-background/80 to-background/30" />
-        <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-transparent to-background/50" />
-      </div>
+    <section className="relative w-full h-[55vh] md:h-[65vh] overflow-hidden">
+      {/* Background image with crossfade */}
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={comic.slug}
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+          transition={{ duration: 0.5 }}
+          className="absolute inset-0"
+        >
+          <img
+            src={comic.imageSrc}
+            alt={comic.title}
+            className="w-full h-full object-cover"
+          />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/60 to-transparent" />
+        </motion.div>
+      </AnimatePresence>
 
-      <div className="relative container mx-auto h-full flex items-end pb-12 px-4">
-        <div className="flex gap-6 items-end">
+      {/* Content */}
+      <div className="relative container mx-auto h-full flex items-end pb-16 md:pb-20 px-4">
+        <AnimatePresence mode="wait">
           <motion.div
-            initial={{ opacity: 0, x: -30 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ duration: 0.6 }}
-            className="hidden sm:block"
-          >
-            <img
-              src={comic.imageSrc}
-              alt={comic.title}
-              className="w-40 md:w-52 rounded-xl shadow-2xl shadow-black/50 border-2 border-border"
-            />
-          </motion.div>
-
-          <motion.div
-            initial={{ opacity: 0, y: 30 }}
+            key={comic.slug}
+            initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ duration: 0.6, delay: 0.2 }}
-            className="flex-1 max-w-xl"
+            exit={{ opacity: 0, y: -10 }}
+            transition={{ duration: 0.4 }}
+            className="max-w-xl"
           >
-            <span className="inline-block px-3 py-1 text-xs font-bold rounded-full bg-amber/20 text-amber border border-amber/30 mb-3">
-              ⭐ REKOMENDASI
-            </span>
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-2">
-              {comic.title}
-            </h1>
-            <div className="flex items-center gap-3 mb-3">
+            {/* Badges */}
+            <div className="flex items-center gap-2 mb-3 flex-wrap">
+              {comic.chapter && (
+                <span className="px-3 py-1 text-xs font-bold rounded-full bg-secondary text-secondary-foreground border border-border">
+                  {comic.chapter}
+                </span>
+              )}
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-amber fill-amber" />
                 <span className="text-sm font-semibold text-amber">{comic.rating}</span>
               </div>
-              {comic.chapter && (
-                <span className="px-2 py-0.5 text-xs rounded-full bg-secondary text-secondary-foreground">
-                  {comic.chapter}
-                </span>
-              )}
             </div>
-            <Link
-              to={`/comic/${comic.slug}`}
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-colors shadow-lg shadow-black/30"
-            >
-              <BookOpen className="h-4 w-4" /> Baca Sekarang
-            </Link>
+
+            {/* Title */}
+            <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4 leading-tight">
+              {comic.title}
+            </h1>
+
+            {/* Actions */}
+            <div className="flex items-center gap-3">
+              <Link
+                to={`/comic/${comic.slug}`}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl bg-foreground text-background font-semibold hover:bg-foreground/90 transition-colors shadow-lg"
+              >
+                <BookOpen className="h-4 w-4" /> Baca Sekarang
+              </Link>
+              <Link
+                to={`/comic/${comic.slug}`}
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-card/50 text-foreground font-semibold hover:bg-card transition-colors"
+              >
+                Detail
+              </Link>
+            </div>
           </motion.div>
+        </AnimatePresence>
+      </div>
+
+      {/* Navigation controls */}
+      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3">
+        <button
+          onClick={prev}
+          className="p-2 rounded-full border border-border bg-card/60 hover:bg-card text-foreground transition-colors"
+          aria-label="Previous"
+        >
+          <ChevronLeft className="h-4 w-4" />
+        </button>
+
+        <div className="flex items-center gap-2">
+          {slides.map((_, i) => (
+            <button
+              key={i}
+              onClick={() => setCurrent(i)}
+              className={`transition-all duration-300 rounded-full ${
+                i === current
+                  ? "w-8 h-2.5 bg-foreground"
+                  : "w-2.5 h-2.5 bg-muted-foreground/40 hover:bg-muted-foreground/70"
+              }`}
+              aria-label={`Slide ${i + 1}`}
+            />
+          ))}
         </div>
+
+        <button
+          onClick={next}
+          className="p-2 rounded-full border border-border bg-card/60 hover:bg-card text-foreground transition-colors"
+          aria-label="Next"
+        >
+          <ChevronRight className="h-4 w-4" />
+        </button>
       </div>
     </section>
   );
