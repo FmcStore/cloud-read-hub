@@ -1,5 +1,6 @@
 import { ComicCard } from "@/components/comic/ComicCard";
-import { TrendingUp } from "lucide-react";
+import { Flame } from "lucide-react";
+import { Link } from "react-router-dom";
 import { ApiComicListItem } from "@/lib/api/comic-api";
 
 interface PopularTodayProps {
@@ -11,9 +12,14 @@ export function PopularToday({ comics }: PopularTodayProps) {
 
   return (
     <section className="container mx-auto px-4 py-8">
-      <div className="flex items-center gap-2 mb-5">
-        <TrendingUp className="h-5 w-5 text-foreground" />
-        <h2 className="text-xl font-display font-bold text-foreground">Populer Hari Ini</h2>
+      <div className="flex items-center justify-between mb-5">
+        <div className="flex items-center gap-2">
+          <Flame className="h-5 w-5 text-amber" />
+          <h2 className="text-xl font-display font-bold text-foreground">Populer</h2>
+        </div>
+        <Link to="/ongoing" className="flex items-center gap-1 text-sm text-muted-foreground hover:text-foreground transition-colors">
+          Lihat Semua <span>→</span>
+        </Link>
       </div>
       <div className="flex gap-4 overflow-x-auto no-scrollbar pb-4">
         {comics.map((comic, i) => (
