@@ -4,6 +4,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { AuthProvider } from "@/contexts/AuthContext";
+import { ThemeProvider } from "@/contexts/ThemeContext";
 import Index from "./pages/Index";
 import ComicList from "./pages/ComicList";
 import ComicDetail from "./pages/ComicDetail";
@@ -23,31 +24,33 @@ const queryClient = new QueryClient();
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <TooltipProvider>
-      <Toaster />
-      <Sonner />
-      <BrowserRouter>
-        <AuthProvider>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            <Route path="/ongoing" element={<ComicList status="Ongoing" />} />
-            <Route path="/completed" element={<ComicList status="Completed" />} />
-            <Route path="/comic/:slug" element={<ComicDetail />} />
-            <Route path="/comic/:slug/read/:chapter" element={<ComicReader />} />
-            <Route path="/login" element={<Login />} />
-            <Route path="/register" element={<Register />} />
-            <Route path="/profile" element={<Profile />} />
-            <Route path="/bookmarks" element={<Bookmarks />} />
-            <Route path="/history" element={<History />} />
-            <Route path="/install" element={<Install />} />
-            <Route path="/admin" element={<AdminDashboard />} />
-            <Route path="/admin/comics" element={<AdminComics />} />
-            <Route path="/admin/comments" element={<AdminComments />} />
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </AuthProvider>
-      </BrowserRouter>
-    </TooltipProvider>
+    <ThemeProvider>
+      <TooltipProvider>
+        <Toaster />
+        <Sonner />
+        <BrowserRouter>
+          <AuthProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="/ongoing" element={<ComicList status="Ongoing" />} />
+              <Route path="/completed" element={<ComicList status="Completed" />} />
+              <Route path="/comic/:slug" element={<ComicDetail />} />
+              <Route path="/comic/:slug/read/:chapter" element={<ComicReader />} />
+              <Route path="/login" element={<Login />} />
+              <Route path="/register" element={<Register />} />
+              <Route path="/profile" element={<Profile />} />
+              <Route path="/bookmarks" element={<Bookmarks />} />
+              <Route path="/history" element={<History />} />
+              <Route path="/install" element={<Install />} />
+              <Route path="/admin" element={<AdminDashboard />} />
+              <Route path="/admin/comics" element={<AdminComics />} />
+              <Route path="/admin/comments" element={<AdminComments />} />
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+          </AuthProvider>
+        </BrowserRouter>
+      </TooltipProvider>
+    </ThemeProvider>
   </QueryClientProvider>
 );
 
