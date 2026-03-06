@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search, BookOpen, Moon, Sun, LogIn, Menu, X } from "lucide-react";
+import { Search, Moon, Sun, LogIn, Menu, X } from "lucide-react";
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
