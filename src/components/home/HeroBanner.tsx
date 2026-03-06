@@ -1,11 +1,21 @@
 import { Link } from "react-router-dom";
 import { motion, AnimatePresence } from "framer-motion";
 import { BookOpen, Star, ChevronLeft, ChevronRight } from "lucide-react";
-import { ApiComicListItem } from "@/lib/api/comic-api";
+import { ApiComicListItem, fetchComicDetail, ApiComicDetail } from "@/lib/api/comic-api";
 import { useState, useEffect, useCallback } from "react";
+import { useQuery } from "@tanstack/react-query";
 
 interface HeroBannerProps {
   comics: ApiComicListItem[];
+}
+
+function useHeroDetail(slug: string) {
+  return useQuery({
+    queryKey: ["hero-detail", slug],
+    queryFn: () => fetchComicDetail(slug),
+    enabled: !!slug,
+    staleTime: 10 * 60 * 1000,
+  });
 }
 
 export function HeroBanner({ comics }: HeroBannerProps) {
@@ -25,12 +35,14 @@ export function HeroBanner({ comics }: HeroBannerProps) {
     return () => clearInterval(timer);
   }, [next]);
 
-  if (slides.length === 0) return null;
   const comic = slides[current];
+  const { data: detail } = useHeroDetail(comic?.slug || "");
+
+  if (slides.length === 0) return null;
 
   return (
-    <section className="relative w-full h-[55vh] md:h-[65vh] overflow-hidden">
-      {/* Background image with crossfade */}
+    <section className="relative w-full h-[50vh] md:h-[65vh] overflow-hidden">
+      {/* Background */}
       <AnimatePresence mode="wait">
         <motion.div
           key={comic.slug}
@@ -45,8 +57,8 @@ export function HeroBanner({ comics }: HeroBannerProps) {
             alt={comic.title}
             className="w-full h-full object-cover"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/70 to-background/20" />
-          <div className="absolute inset-0 bg-gradient-to-r from-background/95 via-background/60 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-background via-background/60 to-background/10" />
+          <div className="absolute inset-0 bg-gradient-to-r from-background/90 via-background/50 to-transparent" />
         </motion.div>
       </AnimatePresence>
 
@@ -63,11 +75,17 @@ export function HeroBanner({ comics }: HeroBannerProps) {
           >
             {/* Badges */}
             <div className="flex items-center gap-2 mb-3 flex-wrap">
-              {comic.chapter && (
-                <span className="px-3 py-1 text-xs font-bold rounded-full bg-secondary text-secondary-foreground border border-border">
-                  {comic.chapter}
+              {detail?.type && (
+                <span className={`px-3 py-1 text-xs font-bold rounded-full ${
+                  detail.type === "Manhwa" ? "tag-manhwa" :
+                  detail.type === "Manga" ? "tag-manga" : "tag-manhua"
+                }`}>
+                  {detail.type}
                 </span>
               )}
+              <span className="px-3 py-1 text-xs font-medium rounded-full bg-secondary text-secondary-foreground">
+                Ongoing
+              </span>
               <div className="flex items-center gap-1">
                 <Star className="h-4 w-4 text-amber fill-amber" />
                 <span className="text-sm font-semibold text-amber">{comic.rating}</span>
@@ -75,9 +93,21 @@ export function HeroBanner({ comics }: HeroBannerProps) {
             </div>
 
             {/* Title */}
-            <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-4 leading-tight">
+            <h1 className="text-3xl md:text-5xl font-display font-bold text-foreground mb-1 leading-tight">
               {comic.title}
             </h1>
+
+            {/* Alternative title */}
+            {detail?.alternative && (
+              <p className="text-sm text-muted-foreground mb-3">{detail.alternative}</p>
+            )}
+
+            {/* Synopsis */}
+            {detail?.synopsis && (
+              <p className="text-sm text-muted-foreground leading-relaxed mb-5 line-clamp-3 max-w-lg">
+                {detail.synopsis}
+              </p>
+            )}
 
             {/* Actions */}
             <div className="flex items-center gap-3">
@@ -89,7 +119,7 @@ export function HeroBanner({ comics }: HeroBannerProps) {
               </Link>
               <Link
                 to={`/comic/${comic.slug}`}
-                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-card/50 text-foreground font-semibold hover:bg-card transition-colors"
+                className="inline-flex items-center gap-2 px-6 py-3 rounded-xl border border-border bg-card/80 text-foreground font-semibold hover:bg-card transition-colors"
               >
                 Detail
               </Link>
@@ -98,16 +128,11 @@ export function HeroBanner({ comics }: HeroBannerProps) {
         </AnimatePresence>
       </div>
 
-      {/* Navigation controls */}
-      <div className="absolute bottom-6 left-1/2 -translate-x-1/2 flex items-center gap-3">
-        <button
-          onClick={prev}
-          className="p-2 rounded-full border border-border bg-card/60 hover:bg-card text-foreground transition-colors"
-          aria-label="Previous"
-        >
+      {/* Dots & Arrows */}
+      <div className="absolute bottom-5 left-1/2 -translate-x-1/2 flex items-center gap-3">
+        <button onClick={prev} className="p-2 rounded-full border border-border bg-card/60 hover:bg-card text-foreground transition-colors" aria-label="Previous">
           <ChevronLeft className="h-4 w-4" />
         </button>
-
         <div className="flex items-center gap-2">
           {slides.map((_, i) => (
             <button
@@ -122,12 +147,7 @@ export function HeroBanner({ comics }: HeroBannerProps) {
             />
           ))}
         </div>
-
-        <button
-          onClick={next}
-          className="p-2 rounded-full border border-border bg-card/60 hover:bg-card text-foreground transition-colors"
-          aria-label="Next"
-        >
+        <button onClick={next} className="p-2 rounded-full border border-border bg-card/60 hover:bg-card text-foreground transition-colors" aria-label="Next">
           <ChevronRight className="h-4 w-4" />
         </button>
       </div>

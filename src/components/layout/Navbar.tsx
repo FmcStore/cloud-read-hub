@@ -1,5 +1,5 @@
 import { Link, useLocation } from "react-router-dom";
-import { Search } from "lucide-react";
+import { Search, BookOpen, Moon, Sun, LogIn } from "lucide-react";
 import { useState, useRef } from "react";
 import { useAuth } from "@/contexts/AuthContext";
 import { motion, AnimatePresence } from "framer-motion";
@@ -7,9 +7,11 @@ import { Input } from "@/components/ui/input";
 import { useNavigate } from "react-router-dom";
 import { Heart, User } from "lucide-react";
 import { useSearchComics } from "@/hooks/useComicApi";
+import { useTheme } from "@/contexts/ThemeContext";
 
 export function Navbar() {
   const { user } = useAuth();
+  const { theme, toggleTheme } = useTheme();
   const [searchOpen, setSearchOpen] = useState(false);
   const [query, setQuery] = useState("");
   const navigate = useNavigate();
@@ -33,19 +35,23 @@ export function Navbar() {
 
   return (
     <header className="fixed top-0 left-0 right-0 z-50 glass">
-      <div className="container mx-auto flex items-center justify-between h-16 px-4">
+      <div className="container mx-auto flex items-center justify-between h-14 px-4">
+        {/* Logo */}
         <Link to="/" className="flex items-center gap-2">
-          <span className="text-2xl font-display font-bold gradient-text">FmcComic</span>
+          <BookOpen className="h-6 w-6 text-foreground" />
+          <span className="text-xl font-display font-bold text-foreground">FmcComic</span>
         </Link>
 
+        {/* Center nav */}
         <nav className="hidden md:flex items-center gap-6">
-          <Link to="/" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Home</Link>
-          <Link to="/ongoing" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Ongoing</Link>
-          <Link to="/completed" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Completed</Link>
-          <Link to="/ongoing" className="text-sm font-medium text-foreground/70 hover:text-foreground transition-colors">Browse</Link>
+          <Link to="/" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Home</Link>
+          <Link to="/ongoing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Ongoing</Link>
+          <Link to="/completed" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Completed</Link>
+          <Link to="/ongoing" className="text-sm font-medium text-muted-foreground hover:text-foreground transition-colors">Browse</Link>
         </nav>
 
-        <div className="flex items-center gap-2 relative">
+        {/* Right actions */}
+        <div className="flex items-center gap-1 relative">
           <AnimatePresence>
             {searchOpen && (
               <motion.div
@@ -85,21 +91,31 @@ export function Navbar() {
               </motion.div>
             )}
           </AnimatePresence>
+
           <button onClick={() => setSearchOpen(!searchOpen)} className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
-            <Search className="h-5 w-5 text-foreground/70" />
+            <Search className="h-5 w-5 text-muted-foreground" />
           </button>
+
+          <button onClick={toggleTheme} className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
+            {theme === "light" ? (
+              <Moon className="h-5 w-5 text-muted-foreground" />
+            ) : (
+              <Sun className="h-5 w-5 text-muted-foreground" />
+            )}
+          </button>
+
           {user ? (
             <>
               <Link to="/bookmarks" className="p-2 rounded-lg hover:bg-muted/50 transition-colors hidden md:block">
-                <Heart className="h-5 w-5 text-foreground/70" />
+                <Heart className="h-5 w-5 text-muted-foreground" />
               </Link>
               <Link to="/profile" className="p-2 rounded-lg hover:bg-muted/50 transition-colors">
-                <User className="h-5 w-5 text-foreground/70" />
+                <User className="h-5 w-5 text-muted-foreground" />
               </Link>
             </>
           ) : (
-            <Link to="/login" className="px-4 py-2 text-sm font-medium rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors">
-              Login
+            <Link to="/login" className="ml-1 inline-flex items-center gap-1.5 px-4 py-2 text-sm font-medium rounded-lg bg-foreground text-background hover:bg-foreground/90 transition-colors">
+              <LogIn className="h-4 w-4" /> Login
             </Link>
           )}
         </div>
