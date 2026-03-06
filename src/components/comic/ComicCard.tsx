@@ -7,6 +7,7 @@ interface ComicCardComic {
   title: string;
   cover: string;
   type?: string;
+  status?: string;
   rating: string | number;
   chapter?: string;
 }
@@ -26,8 +27,8 @@ function getTypeClass(type: string) {
 }
 
 export function ComicCard({ comic, index = 0 }: ComicCardProps) {
-  // Extract chapter number from string like "Chapter 1120"
   const chapterNum = comic.chapter?.replace(/\D/g, "") || "";
+  const isCompleted = comic.status === "Completed";
 
   return (
     <motion.div
@@ -49,7 +50,7 @@ export function ComicCard({ comic, index = 0 }: ComicCardProps) {
           <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         </div>
 
-        {/* Type & Status badges */}
+        {/* Type badge top-left */}
         <div className="absolute top-2 left-2 flex gap-1.5">
           {comic.type && (
             <span className={`px-2 py-0.5 text-[10px] font-bold rounded-full ${getTypeClass(comic.type)}`}>
@@ -57,6 +58,15 @@ export function ComicCard({ comic, index = 0 }: ComicCardProps) {
             </span>
           )}
         </div>
+
+        {/* END badge top-right */}
+        {isCompleted && (
+          <div className="absolute top-2 right-2">
+            <span className="px-2 py-0.5 text-[10px] font-bold rounded-full bg-destructive text-destructive-foreground">
+              END
+            </span>
+          </div>
+        )}
 
         {/* Bottom info */}
         <div className="absolute bottom-0 left-0 right-0 p-3">
