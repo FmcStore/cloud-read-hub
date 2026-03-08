@@ -85,7 +85,7 @@ export default function History() {
                           Terakhir baca: Chapter {item.chapter_number}
                         </p>
                         <Link
-                          to={`/comic/${item.comic_slug}/read/chapter-{item.chapter_number < 10 ? '0' + item.chapter_number : item.chapter_number}`}
+                          to={`/comic/${item.comic_slug}/read/chapter-${item.chapter_number < 10 ? '0' + item.chapter_number : item.chapter_number}`}
                           className="text-xs text-primary hover:underline"
                         >
                           Lanjut baca →
