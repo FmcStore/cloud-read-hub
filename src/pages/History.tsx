@@ -1,11 +1,13 @@
 import { useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
+import { useQueries } from "@tanstack/react-query";
 import { Layout } from "@/components/layout/Layout";
 import { useAuth } from "@/contexts/AuthContext";
 import { useHistory } from "@/hooks/useHistory";
-import { getComicBySlug } from "@/data/comics";
+import { fetchComicDetail } from "@/lib/api/comic-api";
 import { Clock, Trash2, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { Skeleton } from "@/components/ui/skeleton";
 
 export default function History() {
   const { user, loading } = useAuth();
@@ -15,6 +17,15 @@ export default function History() {
   useEffect(() => {
     if (!loading && !user) navigate("/login");
   }, [user, loading]);
+
+  const comicQueries = useQueries({
+    queries: history.map((item) => ({
+      queryKey: ["api-comic-detail", item.comic_slug],
+      queryFn: () => fetchComicDetail(item.comic_slug),
+      staleTime: 10 * 60 * 1000,
+      enabled: !!item.comic_slug,
+    })),
+  });
 
   if (loading || !user) return null;
 
@@ -40,28 +51,48 @@ export default function History() {
           </div>
         ) : (
           <div className="space-y-3">
-            {history.map((item) => {
-              const comic = getComicBySlug(item.comic_slug);
-              if (!comic) return null;
+            {history.map((item, index) => {
+              const query = comicQueries[index];
+              const comic = query?.data;
+              const isItemLoading = query?.isLoading;
+
               return (
                 <div key={item.comic_slug} className="flex items-center gap-3 p-3 rounded-xl bg-card border border-border/50">
-                  <Link to={`/comic/${comic.slug}`}>
-                    <img src={comic.cover} alt={comic.title} className="w-16 h-20 rounded-lg object-cover" />
-                  </Link>
-                  <div className="flex-1 min-w-0">
-                    <Link to={`/comic/${comic.slug}`}>
-                      <h3 className="text-sm font-semibold text-foreground line-clamp-1">{comic.title}</h3>
-                    </Link>
-                    <p className="text-xs text-muted-foreground">
-                      Terakhir baca: Chapter {item.chapter_number}
-                    </p>
-                    <Link
-                      to={`/comic/${comic.slug}/${item.chapter_number}`}
-                      className="text-xs text-primary hover:underline"
-                    >
-                      Lanjut baca →
-                    </Link>
-                  </div>
+                  {isItemLoading ? (
+                    <>
+                      <Skeleton className="w-16 h-20 rounded-lg" />
+                      <div className="flex-1 space-y-2">
+                        <Skeleton className="h-4 w-32" />
+                        <Skeleton className="h-3 w-24" />
+                      </div>
+                    </>
+                  ) : (
+                    <>
+                      <Link to={`/comic/${item.comic_slug}`}>
+                        <img
+                          src={comic?.imageSrc || "/placeholder.svg"}
+                          alt={comic?.title || item.comic_slug}
+                          className="w-16 h-20 rounded-lg object-cover"
+                        />
+                      </Link>
+                      <div className="flex-1 min-w-0">
+                        <Link to={`/comic/${item.comic_slug}`}>
+                          <h3 className="text-sm font-semibold text-foreground line-clamp-1">
+                            {comic?.title || item.comic_slug}
+                          </h3>
+                        </Link>
+                        <p className="text-xs text-muted-foreground">
+                          Terakhir baca: Chapter {item.chapter_number}
+                        </p>
+                        <Link
+                          to={`/comic/${item.comic_slug}/read/chapter-${item.chapter_number < 10 ? '0' + item.chapter_number : item.chapter_number}`}
+                          className="text-xs text-primary hover:underline"
+                        >
+                          Lanjut baca →
+                        </Link>
+                      </div>
+                    </>
+                  )}
                   <button onClick={() => removeHistory(item.comic_slug)} className="p-2 rounded-lg hover:bg-destructive/20">
                     <X className="h-4 w-4 text-destructive" />
                   </button>

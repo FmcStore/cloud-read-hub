@@ -1,40 +1,94 @@
 
 
-## Problem Analysis
+# 🎨 FmcComic - Full Rebuild Plan
 
-The history data IS being saved correctly to the database (confirmed 4 records exist). The issue is in the **History page rendering**.
+## Overview
+Rebuild website komik FmcComic dari vanilla HTML/JS ke React modern dengan desain colorful & vibrant, sistem auth, cloud sync, dan PWA support. Menggunakan mock data untuk komik.
 
-**Root cause**: `History.tsx` line 44 calls `getComicBySlug(item.comic_slug)` which looks up comics from the static `comics` array in `src/data/comics.ts` -- but that array is **empty** (`[]`). So every history item returns `null` from the lookup, and line 45 `if (!comic) return null` filters them all out, showing an empty list.
+---
 
-The app fetches all comic data from an external API (sankavollerei.com), not from static data. The History page needs to fetch comic details from the API for each history item.
+## 1. 🎨 UI/UX - Colorful & Vibrant Design
 
-## Plan
+### Homepage
+- **Hero Banner** besar dengan komik featured, gradient warna-warni (purple → blue → amber), animasi smooth
+- **Horizontal scroll** "Populer Hari Ini" dengan card yang punya gradient border dan glow effect
+- **Grid "Rilis Terbaru"** dengan card komik yang colorful — hover effect dengan scale + shadow berwarna
+- **Sidebar "Proyek Kami"** dengan list kompak
+- Warna accent: kombinasi amber, purple, cyan, pink — bukan hanya amber saja
 
-### 1. Rewrite History.tsx to fetch comic details from API
+### Navigation
+- **Desktop**: Navbar atas dengan glassmorphism + gradient accent
+- **Mobile**: Bottom navigation bar dengan icon animasi (active state berwarna vibrant)
+- Tombol search, bookmark, dan profile user
 
-- Remove the `getComicBySlug` import (useless -- static array is empty)
-- For each history item, call `fetchComicDetail(slug)` from the API to get title, cover image, and type
-- Use `useQueries` from `@tanstack/react-query` to batch-fetch details for all history slugs in parallel
-- Render cards using API data instead of static data
-- Show skeleton/loading states while fetching
+### Halaman List Komik (Ongoing / Completed / Genre)
+- Grid responsif dengan filter (genre, tipe, status)
+- Search bar dengan autocomplete
+- Pagination
 
-### 2. Files to change
+### Halaman Detail Komik
+- Banner besar dengan cover komik + info (judul, genre badges berwarna, rating, sinopsis)
+- Daftar chapter yang bisa di-scroll
+- Tombol Bookmark (heart icon) dan status "Sudah Dibaca"
 
-- **`src/pages/History.tsx`**: Replace static lookup with API-based fetching using `useQueries` + `fetchComicDetail`. Each card will show `detail.title`, `detail.imageSrc` as cover, and link to `/comic/{slug}`.
+### Halaman Baca Komik (Reader)
+- Mode baca vertical scroll (long strip)
+- Progress bar di atas
+- Tap untuk hide/show UI
+- Navigasi chapter (prev/next)
+- Tombol fullscreen
 
-### Technical Detail
+### Halaman History & Bookmark
+- List komik yang pernah dibaca dengan progress chapter
+- List komik yang di-bookmark
+- Bisa hapus satu-satu atau semua
 
-```typescript
-// Use useQueries to fetch all comic details in parallel
-const comicQueries = useQueries({
-  queries: history.map((item) => ({
-    queryKey: ["api-comic-detail", item.comic_slug],
-    queryFn: () => fetchComicDetail(item.comic_slug),
-    staleTime: 10 * 60 * 1000,
-    enabled: !!item.comic_slug,
-  })),
-});
-```
+---
 
-Each card renders using `comicQueries[index].data` for title/cover, falling back to slug if still loading. This is a single-file change.
+## 2. 🔐 Auth System (Supabase)
+
+- **Register** dengan email + password
+- **Login** dengan email + password
+- **Profile page** sederhana (avatar, username)
+- Protected routes: Bookmark & History hanya bisa diakses jika login
+- Logout
+
+---
+
+## 3. ☁️ Cloud Sync
+
+- **History baca**: Otomatis simpan komik + chapter terakhir yang dibaca ke database
+- **Bookmark**: Simpan/hapus komik favorit ke database
+- Saat login di device baru, semua data otomatis muncul kembali
+
+---
+
+## 4. 📱 PWA Support
+
+- Bisa diinstall sebagai aplikasi dari browser
+- Icon dan splash screen FmcComic
+- Halaman `/install` dengan instruksi install
+
+---
+
+## 5. 📦 Mock Data
+
+- Data komik menggunakan mock data hardcoded (judul, cover image, genre, chapter list, halaman komik)
+- Sekitar 10-15 komik contoh dengan beberapa chapter dan halaman dummy
+- Struktur data siap diganti ke API asli nanti
+
+---
+
+## Halaman yang Akan Dibuat
+1. `/` — Homepage
+2. `/ongoing` — List komik ongoing
+3. `/completed` — List komik tamat
+4. `/comic/:slug` — Detail komik
+5. `/comic/:slug/:chapter` — Baca komik
+6. `/login` — Login
+7. `/register` — Register
+8. `/profile` — Profile user
+9. `/bookmarks` — Daftar bookmark
+10. `/history` — Riwayat baca
+11. `/install` — Panduan install PWA
 
