@@ -31,23 +31,20 @@ export function useHistory() {
 
   const updateHistory = async (slug: string, chapterNumber: number) => {
     if (!user) return;
-    const { data: existing } = await supabase
+    const { error } = await supabase
       .from("reading_history")
-      .select("id")
-      .eq("user_id", user.id)
-      .eq("comic_slug", slug)
-      .maybeSingle();
-
-    if (existing) {
-      await supabase
-        .from("reading_history")
-        .update({ chapter_number: chapterNumber, last_read_at: new Date().toISOString() })
-        .eq("user_id", user.id)
-        .eq("comic_slug", slug);
-    } else {
-      await supabase
-        .from("reading_history")
-        .insert({ user_id: user.id, comic_slug: slug, chapter_number: chapterNumber });
+      .upsert(
+        {
+          user_id: user.id,
+          comic_slug: slug,
+          chapter_number: chapterNumber,
+          last_read_at: new Date().toISOString(),
+        },
+        { onConflict: "user_id,comic_slug" }
+      );
+    if (error) {
+      console.error("Failed to update history:", error);
+      return;
     }
     fetchHistory();
   };
