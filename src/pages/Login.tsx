@@ -85,11 +85,14 @@ export default function Login() {
               className="w-full"
               disabled={loading}
               onClick={async () => {
-                const { error } = await lovable.auth.signInWithOAuth("google", {
-                  redirect_uri: window.location.origin,
+                const { error } = await supabase.auth.signInWithOAuth({
+                  provider: "google",
+                  options: {
+                    redirectTo: window.location.origin,
+                  },
                 });
                 if (error) {
-                  toast({ title: "Login Google gagal", description: String(error), variant: "destructive" });
+                  toast({ title: "Login Google gagal", description: error.message, variant: "destructive" });
                 }
               }}
             >
