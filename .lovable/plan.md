@@ -1,45 +1,94 @@
 
 
-# Plan: Login dengan Google OAuth
+# 🎨 FmcComic - Full Rebuild Plan
 
-## Ringkasan
-Menambahkan tombol "Login dengan Google" di halaman Login dan Register, menggunakan Lovable Cloud managed Google OAuth (sudah tersedia otomatis, tidak perlu setup tambahan).
+## Overview
+Rebuild website komik FmcComic dari vanilla HTML/JS ke React modern dengan desain colorful & vibrant, sistem auth, cloud sync, dan PWA support. Menggunakan mock data untuk komik.
 
-## Langkah Implementasi
+---
 
-### 1. Configure Social Login
-Gunakan tool Configure Social Auth untuk generate modul `src/integrations/lovable/` dan install package `@lovable.dev/cloud-auth-js`. Ini akan menyediakan fungsi `lovable.auth.signInWithOAuth("google", ...)`.
+## 1. 🎨 UI/UX - Colorful & Vibrant Design
 
-### 2. Update Login.tsx
-- Tambahkan tombol "Login dengan Google" dengan icon Google di bawah form email/password
-- Tombol memanggil `lovable.auth.signInWithOAuth("google", { redirect_uri: window.location.origin })`
-- Tambah separator "atau" antara form dan tombol Google
+### Homepage
+- **Hero Banner** besar dengan komik featured, gradient warna-warni (purple → blue → amber), animasi smooth
+- **Horizontal scroll** "Populer Hari Ini" dengan card yang punya gradient border dan glow effect
+- **Grid "Rilis Terbaru"** dengan card komik yang colorful — hover effect dengan scale + shadow berwarna
+- **Sidebar "Proyek Kami"** dengan list kompak
+- Warna accent: kombinasi amber, purple, cyan, pink — bukan hanya amber saja
 
-### 3. Update Register.tsx
-- Tambahkan tombol "Daftar dengan Google" yang sama, supaya user bisa langsung daftar tanpa form manual
+### Navigation
+- **Desktop**: Navbar atas dengan glassmorphism + gradient accent
+- **Mobile**: Bottom navigation bar dengan icon animasi (active state berwarna vibrant)
+- Tombol search, bookmark, dan profile user
 
-### 4. PWA Compatibility
-Project ini menggunakan service worker (`public/sw.js`). Perlu memastikan route `/~oauth` tidak di-cache oleh service worker agar redirect OAuth berjalan lancar.
+### Halaman List Komik (Ongoing / Completed / Genre)
+- Grid responsif dengan filter (genre, tipe, status)
+- Search bar dengan autocomplete
+- Pagination
 
-## Detail Teknis
+### Halaman Detail Komik
+- Banner besar dengan cover komik + info (judul, genre badges berwarna, rating, sinopsis)
+- Daftar chapter yang bisa di-scroll
+- Tombol Bookmark (heart icon) dan status "Sudah Dibaca"
 
-```
-┌─────────────────────────┐
-│       Login Page        │
-│                         │
-│  [Email field        ]  │
-│  [Password field     ]  │
-│  [    Login Button   ]  │
-│                         │
-│  ────── atau ──────     │
-│                         │
-│  [G Login dengan Google]│
-│                         │
-│  Belum punya akun?      │
-└─────────────────────────┘
-```
+### Halaman Baca Komik (Reader)
+- Mode baca vertical scroll (long strip)
+- Progress bar di atas
+- Tap untuk hide/show UI
+- Navigasi chapter (prev/next)
+- Tombol fullscreen
 
-- **Files to change**: `src/pages/Login.tsx`, `src/pages/Register.tsx`, `public/sw.js`
-- **Files to generate**: `src/integrations/lovable/` (via Configure Social Auth tool)
-- **No database changes needed** — profile auto-creation trigger already exists via `handle_new_user()`
+### Halaman History & Bookmark
+- List komik yang pernah dibaca dengan progress chapter
+- List komik yang di-bookmark
+- Bisa hapus satu-satu atau semua
+
+---
+
+## 2. 🔐 Auth System (Supabase)
+
+- **Register** dengan email + password
+- **Login** dengan email + password
+- **Profile page** sederhana (avatar, username)
+- Protected routes: Bookmark & History hanya bisa diakses jika login
+- Logout
+
+---
+
+## 3. ☁️ Cloud Sync
+
+- **History baca**: Otomatis simpan komik + chapter terakhir yang dibaca ke database
+- **Bookmark**: Simpan/hapus komik favorit ke database
+- Saat login di device baru, semua data otomatis muncul kembali
+
+---
+
+## 4. 📱 PWA Support
+
+- Bisa diinstall sebagai aplikasi dari browser
+- Icon dan splash screen FmcComic
+- Halaman `/install` dengan instruksi install
+
+---
+
+## 5. 📦 Mock Data
+
+- Data komik menggunakan mock data hardcoded (judul, cover image, genre, chapter list, halaman komik)
+- Sekitar 10-15 komik contoh dengan beberapa chapter dan halaman dummy
+- Struktur data siap diganti ke API asli nanti
+
+---
+
+## Halaman yang Akan Dibuat
+1. `/` — Homepage
+2. `/ongoing` — List komik ongoing
+3. `/completed` — List komik tamat
+4. `/comic/:slug` — Detail komik
+5. `/comic/:slug/:chapter` — Baca komik
+6. `/login` — Login
+7. `/register` — Register
+8. `/profile` — Profile user
+9. `/bookmarks` — Daftar bookmark
+10. `/history` — Riwayat baca
+11. `/install` — Panduan install PWA
 
