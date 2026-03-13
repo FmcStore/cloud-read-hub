@@ -6,7 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Mail, Lock, User, UserPlus } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
-import { supabase } from "@/integrations/supabase/client";
+import { lovable } from "@/integrations/lovable";
 import { Separator } from "@/components/ui/separator";
 
 export default function Register() {
@@ -100,14 +100,11 @@ export default function Register() {
               className="w-full"
               disabled={loading}
               onClick={async () => {
-                const { error } = await supabase.auth.signInWithOAuth({
-                  provider: "google",
-                  options: {
-                    redirectTo: window.location.origin,
-                  },
+                const result = await lovable.auth.signInWithOAuth("google", {
+                  redirect_uri: window.location.origin,
                 });
-                if (error) {
-                  toast({ title: "Login Google gagal", description: error.message, variant: "destructive" });
+                if (result?.error) {
+                  toast({ title: "Login Google gagal", description: String(result.error), variant: "destructive" });
                 }
               }}
             >
