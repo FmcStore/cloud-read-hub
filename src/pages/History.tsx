@@ -84,12 +84,22 @@ export default function History() {
                         <p className="text-xs text-muted-foreground">
                           Terakhir baca: Chapter {item.chapter_number}
                         </p>
-                        <Link
-                          to={`/comic/${item.comic_slug}/read/chapter-${item.chapter_number < 10 ? '0' + item.chapter_number : item.chapter_number}`}
-                          className="text-xs text-primary hover:underline"
-                        >
-                          Lanjut baca →
-                        </Link>
+                        {(() => {
+                          // Find the matching chapter slug from fetched comic data
+                          const matchedChapter = comic?.chapters?.find((ch) => {
+                            const match = ch.title.match(/Chapter\s+(\d+)/i);
+                            return match && parseInt(match[1]) === item.chapter_number;
+                          });
+                          const chapterSlug = matchedChapter?.slug || `chapter-${item.chapter_number}`;
+                          return (
+                            <Link
+                              to={`/comic/${item.comic_slug}/read/${chapterSlug}`}
+                              className="text-xs text-primary hover:underline"
+                            >
+                              Lanjut baca →
+                            </Link>
+                          );
+                        })()}
                       </div>
                     </>
                   )}
