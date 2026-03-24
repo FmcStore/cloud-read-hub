@@ -101,9 +101,37 @@ export async function fetchComicDetail(slug: string): Promise<ApiComicDetail> {
 }
 
 export async function fetchChapter(comicSlug: string, chapterSlug: string): Promise<ApiChapterRead> {
-  // Strip numeric suffix (e.g., "chapter-01.730192" -> "chapter-01")
-  const cleanSlug = chapterSlug.replace(/\.\d+$/, "");
-  const fullSlug = `${comicSlug}-${cleanSlug}`;
-  const data = await fetchApi<ApiChapterRead & { success: boolean }>(`kiryuu/chapter/${fullSlug}`);
-  return data;
+  // API sumber kadang tidak konsisten: chapter-1.734045, chapter-1, atau chapter-01.
+  // Coba beberapa variasi slug agar halaman reader tetap bisa load.
+  const normalized = chapterSlug.trim();
+  const cleanSlug = normalized.replace(/\.\d+$/, "");
+  const chapterNumberMatch = cleanSlug.match(/chapter-(\d+)/i);
+  const chapterNumber = chapterNumberMatch ? parseInt(chapterNumberMatch[1], 10) : null;
+
+  const chapterCandidates = [
+    normalized,
+    cleanSlug,
+    chapterNumber ? `chapter-${chapterNumber}` : null,
+    chapterNumber ? `chapter-${String(chapterNumber).padStart(2, "0")}` : null,
+    chapterNumber ? `chapter-${String(chapterNumber).padStart(3, "0")}` : null,
+  ].filter((v): v is string => Boolean(v));
+
+  const endpointCandidates = Array.from(
+    new Set(
+      chapterCandidates.map((candidate) =>
+        candidate.startsWith(`${comicSlug}-`) ? candidate : `${comicSlug}-${candidate}`
+      )
+    )
+  );
+
+  let lastError: unknown;
+  for (const endpointSlug of endpointCandidates) {
+    try {
+      return await fetchApi<ApiChapterRead & { success: boolean }>(`kiryuu/chapter/${endpointSlug}`);
+    } catch (error) {
+      lastError = error;
+    }
+  }
+
+  throw lastError instanceof Error ? lastError : new Error("API request failed");
 }
